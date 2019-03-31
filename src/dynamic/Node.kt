@@ -10,5 +10,4 @@ class Node(var id: Int, var neighbors: ArrayList<Int>) {
 
     }
 
-
 }

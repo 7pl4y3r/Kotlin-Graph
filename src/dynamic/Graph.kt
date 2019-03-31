@@ -11,7 +11,7 @@ fun main() {
 
     graph.setGraphExample()
     graph.printGraph()
-    graph.bft(2)
+    graph.dft(BooleanArray(5) {false}, 1)
 
 }
 
@@ -156,6 +156,19 @@ class Graph(private var n: Int) {
             print("${queue[i]} ")
             i++
 
+        }
+
+    }
+
+
+    fun dft(visited: BooleanArray, x: Int) {
+
+        print("$x ")
+        visited[x] = true
+
+        for (element in nodeList[x].neighbors) {
+            if (!visited[element])
+                dft(visited, element)
         }
 
     }
