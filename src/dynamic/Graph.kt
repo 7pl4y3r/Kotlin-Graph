@@ -2,6 +2,7 @@ package dynamic
 
 
 import java.util.Scanner
+import kotlin.math.cos
 
 
 //Used to test the code
@@ -9,9 +10,8 @@ fun main() {
 
     val graph = Graph(3)
 
-    graph.setGraphExample()
-    graph.printGraph()
-    graph.dft(BooleanArray(5) {false}, 1)
+    graph.setCostExample()
+    graph.dijkstra(0)
 
 }
 
@@ -20,6 +20,7 @@ class Graph(private var n: Int) {
 
 
     private val nodeList = ArrayList<Node>()
+    private val costNodeList = ArrayList<CostNode>()
     private val scn = Scanner(System.`in`)
 
 
@@ -56,6 +57,43 @@ class Graph(private var n: Int) {
         nodeList.add(Node(2, list2))
         nodeList.add(Node(3, list3))
         nodeList.add(Node(4, list4))
+
+    }
+
+
+    fun setCostExample() {
+
+        n = 5
+
+        val list0 = ArrayList<Costs>()
+        val list1 = ArrayList<Costs>()
+        val list2 = ArrayList<Costs>()
+        val list3 = ArrayList<Costs>()
+        val list4 = ArrayList<Costs>()
+
+        list0.add(Costs(1, 2))
+        list0.add(Costs(2, 4))
+        list0.add(Costs(4, 5))
+
+        list1.add(Costs(0, 2))
+        list1.add(Costs(2, 1))
+
+        list2.add(Costs(0, 4))
+        list2.add(Costs(1, 2))
+        list2.add(Costs(3, 1))
+
+        list3.add(Costs(2, 1))
+        list3.add(Costs(4, 6))
+
+        list4.add(Costs(0, 5))
+        list4.add(Costs(3, 6))
+
+
+        costNodeList.add(CostNode(0, list0))
+        costNodeList.add(CostNode(1, list1))
+        costNodeList.add(CostNode(2, list2))
+        costNodeList.add(CostNode(3, list3))
+        costNodeList.add(CostNode(4, list4))
 
     }
 
@@ -169,6 +207,64 @@ class Graph(private var n: Int) {
         for (element in nodeList[x].neighbors) {
             if (!visited[element])
                 dft(visited, element)
+        }
+
+    }
+
+
+    fun dijkstra(start: Int) {
+
+        val visited = BooleanArray(n)
+        val tree = IntArray(n)
+        val cost = IntArray(n)
+
+        var minimumIndex = -1
+        var currentCost = -1
+
+
+        visited[start] = true
+        for (i in 0 until costNodeList[start].neighbors.size) {
+
+            cost[i] = costNodeList[start].neighbors[i].cost
+            if (cost[i] < Int.MAX_VALUE)
+                tree[i] = start
+
+        }
+
+
+        for (i in 0 until (n - 1)) {
+
+            for (j in 0 until n) {
+                if (!visited[j] && cost[j] < Int.MAX_VALUE)
+                    minimumIndex = j
+            }
+
+
+            visited[minimumIndex] = true
+            for (j in 0 until costNodeList[minimumIndex].neighbors.size) {
+
+                    currentCost = costNodeList[minimumIndex].neighbors[j].cost
+                    if (!visited[j] &&
+                        cost[j] > cost[minimumIndex] + currentCost && currentCost < Int.MAX_VALUE
+                    ) {
+
+                        cost[j] = cost[minimumIndex] + currentCost
+                        tree[j] = minimumIndex
+
+                    }
+            }
+
+        }
+
+        printDijkstra(tree, start)
+    }
+
+
+    private fun printDijkstra(tree: IntArray, index: Int) {
+
+        if (tree[index] != 0) {
+            printDijkstra(tree, tree[index])
+            print("$index ")
         }
 
     }
