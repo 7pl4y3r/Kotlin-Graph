@@ -10,8 +10,8 @@ fun main() {
 
     val graph = Graph(3)
 
-    graph.setCostExample()
-    graph.dijkstra(0)
+    graph.setCostXYExample()
+    graph.kruskal()
 
 }
 
@@ -21,6 +21,7 @@ class Graph(private var n: Int) {
 
     private val nodeList = ArrayList<Node>()
     private val costNodeList = ArrayList<CostNode>()
+    private val costXYList = ArrayList<CostXY>()
     private val scn = Scanner(System.`in`)
 
 
@@ -94,6 +95,25 @@ class Graph(private var n: Int) {
         costNodeList.add(CostNode(2, list2))
         costNodeList.add(CostNode(3, list3))
         costNodeList.add(CostNode(4, list4))
+
+    }
+
+
+    fun setCostXYExample() {
+
+        n = 7
+
+        costXYList.add(CostXY(1, 2, 5))
+        costXYList.add(CostXY(1, 3, 8))
+        costXYList.add(CostXY(2, 3, 11))
+        costXYList.add(CostXY(2, 4, 10))
+        costXYList.add(CostXY(3, 4, 15))
+        costXYList.add(CostXY(3, 6, 9))
+        costXYList.add(CostXY(4, 5, 2))
+        costXYList.add(CostXY(4, 6, 7))
+        costXYList.add(CostXY(5, 6, 10))
+        costXYList.add(CostXY(5, 7, 4))
+        costXYList.add(CostXY(6, 7, 12))
 
     }
 
@@ -267,6 +287,84 @@ class Graph(private var n: Int) {
             print("$index ")
         }
 
+    }
+
+
+    private fun partition(list: ArrayList<CostXY>, low: Int, high: Int): Int {
+
+        var i = low - 1
+        val piv = list[high].cost
+        var temp: CostXY
+
+        for (j in low until high) {
+
+            if (list[j].cost <= piv) {
+
+                i++
+
+                temp = list[i]
+                list[i] = list[j]
+                list[j] = temp
+
+            }
+
+        }
+
+        temp = list[i + 1]
+        list[i + 1] = list[high]
+        list[high] = temp
+
+        return i + 1
+    }
+
+
+    private fun quickSort(list: ArrayList<CostXY>, low: Int, high: Int) {
+
+        if (low < high) {
+
+            val pi = partition(list, low, high)
+
+            quickSort(list, low, pi - 1)
+            quickSort(list, pi + 1, high)
+
+        }
+
+    }
+
+
+    fun kruskal() {
+
+        quickSort(costXYList, 0, costXYList.size - 1)
+
+        val visited = IntArray(costXYList.size + 1)
+        var totalCost = 0
+
+        for (i in 1 until costXYList.size + 1)
+            visited[i] = i
+
+
+        var i = 1
+        var k = 1
+        while (k <= n - 1) {
+
+            if (visited[costXYList[i].x] != visited[costXYList[i].y]) {
+
+                k++
+                totalCost += costXYList[i].cost
+                println("${costXYList[i].x} ${costXYList[i].y}")
+
+                for (j in 1..n) {
+                    if (visited[j] == costXYList[i].x)
+                        visited[j] = costXYList[i].y
+                }
+
+            }
+
+            i++
+        }
+
+
+        println("Total cost is -> $totalCost")
     }
 
 }
